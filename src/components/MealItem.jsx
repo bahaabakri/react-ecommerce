@@ -1,6 +1,14 @@
 import PropTypes from 'prop-types'
 import {getCurrencyFormatter} from '../util'
+import Button from './UI/Button'
+import { useContext } from 'react'
+import CartContext from '../state/CartContext'
 const MealItem = ({meal}) => {
+    const {items, addItem} = useContext(CartContext)
+    console.log(items)
+    const onAddToCart = () => {
+        addItem(meal)
+    }
     return (
         <div className='meal-item'>
             <article>
@@ -13,7 +21,7 @@ const MealItem = ({meal}) => {
                     {getCurrencyFormatter.format(meal.price)}
                 </div>
                 <div className='meal-item-actions'>
-                    <button className='button'>ADD TO CART</button>
+                    <Button onClick={onAddToCart}>ADD TO CART</Button>
                 </div>
             </article>
 
