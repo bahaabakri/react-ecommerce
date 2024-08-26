@@ -1,8 +1,11 @@
-import { useEffect, useRef } from "react"
+import { useEffect, useRef, useContext } from "react"
+import ModalContext from '../../state/ModalContext'
 import Button from "./Button"
+import { createPortal } from "react-dom"
 
-const Modal = ({children, isOpen, actionTitle, onDoAction, handleCloseModal, ...rest}) => {
+const Modal = ({children, isOpen, actionTitle, onDoAction, className, ...rest}) => {
     const dialogRef = useRef()
+    const {closeModal} = useContext(ModalContext)
     useEffect(() => {
         if(isOpen) {
             dialogRef.current.showModal()
@@ -13,22 +16,23 @@ const Modal = ({children, isOpen, actionTitle, onDoAction, handleCloseModal, ...
 
     const onClose = () => {
         dialogRef.current.close()
-        handleCloseModal()
+        closeModal()
     }
-    return (
-        <dialog className='modal' {...rest} ref={dialogRef}>
-            {children}
-            <div className="modal-actions">
-                {actionTitle && 
-                    <Button onClick={onDoAction}>
-                        {actionTitle}
-                    </Button>
-                }
-                <Button isTextButton onClick={onClose}>
-                    Close
+    const dialogJSX = 
+    (<dialog className={`${className} modal`} {...rest} ref={dialogRef}>
+        {children}
+        <div className="modal-actions">
+            {actionTitle && 
+                <Button onClick={onDoAction}>
+                    {actionTitle}
                 </Button>
-            </div>
-        </dialog>
-    )
+            }
+            <Button isTextButton onClick={onClose}>
+                Close
+            </Button>
+        </div>
+    </dialog>) 
+    return createPortal(dialogJSX, document.getElementById('modal'))
+
 }
 export default Modal

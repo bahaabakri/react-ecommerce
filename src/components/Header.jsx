@@ -4,15 +4,14 @@ import Button from './UI/Button'
 import CartContext from '../state/CartContext'
 import { useState } from 'react'
 import CartModal from './CartModal'
+import ModalContext from '../state/ModalContext'
 const Header = () => {
     const {items} = useContext(CartContext)
+    const {section, showModal} = useContext(ModalContext)
     const totalCartItems = items.reduce((accum, currentVal) => {
-        return accum + currentVal.quantity
+        return (+accum + +currentVal.quantity)
     }, 0)
-    const [isModalOpen, setModal] = useState(false)
-    const handleCloseCartModal = () => {
-        setModal(false)
-    }
+
     return (
         <>
             <header id="main-header">
@@ -20,17 +19,14 @@ const Header = () => {
                     <img src={Logo} alt="" />
                 </h2>
                 <Button
-                    onClick={() => setModal(true)}
+                    onClick={() => showModal('cart')}
                     isTextButton>
                     Cart ({totalCartItems})
                 </Button>
             </header>
-            {isModalOpen && 
+            {section == 'cart' && 
             <CartModal 
-                totalCartItems={totalCartItems} 
-                isOpen={isModalOpen}
-                handleCloseCartModal={handleCloseCartModal}>
-                
+                totalCartItems={totalCartItems}>
             </CartModal>}
 
         </>

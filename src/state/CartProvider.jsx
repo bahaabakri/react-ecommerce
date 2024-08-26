@@ -3,6 +3,7 @@ import CartContext from "./CartContext"
 
 const ADD_ITEM = 'ADD_ITEM'
 const UPDATE_QUANTITY = 'UPDATE_QUANTITY'
+const DELETE_ITEM = 'DELETE_ITEM' 
 
 const CartReducer = (state, action) => {
     const updatedItems = [...state.items]
@@ -22,7 +23,7 @@ const CartReducer = (state, action) => {
         }
     }
     if(action.type === UPDATE_QUANTITY) {
-        const exsistingCardItemIndex = updatedItems.findIndex(el => el.id === action.payload.id)
+        const exsistingCardItemIndex = updatedItems.findIndex(el => el.id === action.payload.itemId)
         if (exsistingCardItemIndex == -1) {
             return {
                 items: updatedItems
@@ -35,6 +36,10 @@ const CartReducer = (state, action) => {
         }
         updatedItems[exsistingCardItemIndex] = updatedCardItem
 
+    }
+    if (action.type === DELETE_ITEM) {
+        const elementToDeleteIndex = updatedItems.findIndex(el => el.id == action.payload.itemId)
+        updatedItems.splice(elementToDeleteIndex, 1)
     }
     return {
         items: updatedItems
@@ -58,10 +63,17 @@ const CartProvider = ({children}) => {
             payload:{itemId, quantity}
         })
     }
+    const handleDeleteItem = (itemId) => {
+        dispatchCart({
+            type: DELETE_ITEM,
+            payload: {itemId}
+        })
+    }
     const cartCtx = {
         items: cartState.items,
         addItem: handleAddItem,
-        updateCartQuantity: handleUpdateQuantity
+        updateCartQuantity: handleUpdateQuantity,
+        deleteItem: handleDeleteItem
     }
     return (
         <CartContext.Provider value={cartCtx}>
