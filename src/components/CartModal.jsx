@@ -23,6 +23,9 @@ const CartModal = ({totalCartItems}) => {
                 >
 
             <h2>Your Cart:</h2>
+            {items.length > 0 
+            ? 
+            <>
             <div className="cart-total">Cart Total: 
                 <span className="text-bold">&nbsp; ({totalCartItems}) &nbsp;</span> Item{totalCartItems > 1 && 's'}, 
                 <span className="text-bold"> &nbsp; ({items.length}) &nbsp;</span> Product{items.length > 1 && 's'}
@@ -31,6 +34,10 @@ const CartModal = ({totalCartItems}) => {
             <ul>
                 {items.map(item => <CartItem item={item} key={item.id}></CartItem>)}
             </ul>
+            </>
+
+            : <p>No any item in the cart</p>}
+
     </Modal>
     )
 
