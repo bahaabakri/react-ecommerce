@@ -206,7 +206,9 @@ h1 {
   justify-content: flex-start;
   gap: 1rem;
 }
-
+.error-message {
+  color:rgb(165, 36, 36)
+}
 .button {
   font: inherit;
   cursor: pointer;
@@ -221,6 +223,12 @@ h1 {
 .button:active {
   background-color: #ffab04;
   border-color: #ffab04;
+  color: #1f1a09;
+}
+
+.button:disabled {
+  background-color: #AAA;
+  border-color: #AAA;
   color: #1f1a09;
 }
 

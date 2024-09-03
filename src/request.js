@@ -18,3 +18,14 @@ export const getGeoInfo = async() => {
         console.log(err);
     }
 };
+
+export const placeOrder = async(bodyRequest) => {
+    const placeOrderURL = 'http://localhost:3000/orders';
+    const res = await fetch(placeOrderURL, {
+        method: 'POST',
+        body: JSON.stringify(bodyRequest),
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+}

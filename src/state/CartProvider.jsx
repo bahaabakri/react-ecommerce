@@ -69,11 +69,19 @@ const CartProvider = ({children}) => {
             payload: {itemId}
         })
     }
+    const totalCartPrice = cartState.items.reduce((accum, item,) => {
+        return +accum + (item.quantity * item.price)
+    }, 0)
+    const totalCartItems = cartState.items.reduce((accum, currentVal) => {
+        return (+accum + +currentVal.quantity)
+    }, 0)
     const cartCtx = {
         items: cartState.items,
+        totalCartPrice,
+        totalCartItems,
         addItem: handleAddItem,
         updateCartQuantity: handleUpdateQuantity,
-        deleteItem: handleDeleteItem
+        deleteItem: handleDeleteItem,
     }
     return (
         <CartContext.Provider value={cartCtx}>

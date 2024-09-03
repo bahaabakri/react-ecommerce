@@ -6,11 +6,9 @@ import { useState } from 'react'
 import CartModal from './CartModal'
 import ModalContext from '../state/ModalContext'
 const Header = () => {
-    const {items} = useContext(CartContext)
-    const {section, showModal} = useContext(ModalContext)
-    const totalCartItems = items.reduce((accum, currentVal) => {
-        return (+accum + +currentVal.quantity)
-    }, 0)
+    const {totalCartItems} = useContext(CartContext)
+    const {showModal} = useContext(ModalContext)
+
 
     return (
         <>
@@ -23,11 +21,7 @@ const Header = () => {
                     isTextButton>
                     Cart ({totalCartItems})
                 </Button>
-            </header>
-            {section == 'cart' && 
-            <CartModal 
-                totalCartItems={totalCartItems}>
-            </CartModal>}
+            </header>            
 
         </>
 

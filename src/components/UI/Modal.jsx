@@ -3,7 +3,7 @@ import ModalContext from '../../state/ModalContext'
 import Button from "./Button"
 import { createPortal } from "react-dom"
 
-const Modal = ({children, isOpen, actionTitle, onDoAction, className, ...rest}) => {
+const Modal = ({children, isOpen, isActionDisable, actionTitle, onDoAction, className, ...rest}) => {
     const dialogRef = useRef()
     const {closeModal} = useContext(ModalContext)
     useEffect(() => {
@@ -23,7 +23,7 @@ const Modal = ({children, isOpen, actionTitle, onDoAction, className, ...rest}) 
         {children}
         <div className="modal-actions">
             {actionTitle && 
-                <Button onClick={onDoAction}>
+                <Button onClick={onDoAction} disabled={isActionDisable}>
                     {actionTitle}
                 </Button>
             }

@@ -5,20 +5,20 @@ import {getCurrencyFormatter} from '../util'
 import ModalContext from "../state/ModalContext"
 import CartItem from './CartItem'
 
-const CartModal = ({totalCartItems}) => {
-    const {items} = useContext(CartContext)
-    const {section} = useContext(ModalContext)
-    const totalCartPrice = items.reduce((accum, item,) => {
-        return +accum + (item.quantity * item.price)
-    }, 0)
-    const onPlaceOrder = () => {
-        alert('Place Order HERE !!')
+const CartModal = () => {
+    const {items, totalCartPrice, totalCartItems} = useContext(CartContext)
+    const {section, closeModal, showModal} = useContext(ModalContext)
+    const onNavigateToCheckout = () => {
+        // To do open checkout modal 
+        closeModal()
+        showModal('checkout')
     }
     return (
         <Modal 
                 isOpen={section == 'cart'}
-                actionTitle={'Place Order'}
-                onDoAction={onPlaceOrder}
+                actionTitle={'Go To Checkout'}
+                onDoAction={onNavigateToCheckout}
+                isActionDisable={items.length == 0}
                 className="cart"
                 >
 
@@ -38,7 +38,7 @@ const CartModal = ({totalCartItems}) => {
 
             : <p>No any item in the cart</p>}
 
-    </Modal>
+        </Modal>
     )
 
 
