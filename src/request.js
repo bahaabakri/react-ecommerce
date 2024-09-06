@@ -19,13 +19,19 @@ export const getGeoInfo = async() => {
     }
 };
 
-export const placeOrder = async(bodyRequest) => {
+export const placeOrder = async(order) => {
     const placeOrderURL = 'http://localhost:3000/orders';
     const res = await fetch(placeOrderURL, {
         method: 'POST',
-        body: JSON.stringify(bodyRequest),
+        body: JSON.stringify({order}),
         headers: {
             'Content-Type': 'application/json'
         }
     })
+    const data = await res.json()
+    if (!res.ok) {
+        throw new Error('Something went wrong')
+    }
+    return data
+
 }

@@ -239,6 +239,15 @@ h1 {
   border: none;
   color: #ffc404;
 }
+.button-flex {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.small-spinner {
+  width: 20px;
+  height: 20px;
+}
 
 .text-button:hover,
 .text-button:active {

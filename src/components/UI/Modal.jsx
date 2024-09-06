@@ -2,8 +2,9 @@ import { useEffect, useRef, useContext } from "react"
 import ModalContext from '../../state/ModalContext'
 import Button from "./Button"
 import { createPortal } from "react-dom"
+import Spinner from "../Spinner"
 
-const Modal = ({children, isOpen, isActionDisable, actionTitle, onDoAction, className, ...rest}) => {
+const Modal = ({children, isOpen, isActionDisable, actionTitle, onDoAction, className,isLoading, ...rest}) => {
     const dialogRef = useRef()
     const {closeModal} = useContext(ModalContext)
     useEffect(() => {
@@ -23,8 +24,10 @@ const Modal = ({children, isOpen, isActionDisable, actionTitle, onDoAction, clas
         {children}
         <div className="modal-actions">
             {actionTitle && 
-                <Button onClick={onDoAction} disabled={isActionDisable}>
-                    {actionTitle}
+                <Button onClick={onDoAction} disabled={isActionDisable} className={'button-flex'}>
+                     {isLoading && <div> <Spinner/></div> }
+                    <div>{actionTitle}</div>
+                    
                 </Button>
             }
             <Button isTextButton onClick={onClose}>

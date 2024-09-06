@@ -1,14 +1,19 @@
-import {useContext, useRef} from 'react'
+import {useContext, useRef, useState} from 'react'
 import Modal from "./UI/Modal"
 import Input from "./UI/Input"
 import CartContext from '../state/CartContext'
 import ModalContext from '../state/ModalContext'
 import {getCurrencyFormatter} from '../util'
 import { useForm } from 'react-hook-form'
+import {placeOrder} from '../request'
+import { Snackbar } from '@mui/material'
 const CheckoutModal = () => {
     const {items, totalCartPrice, totalCartItems} = useContext(CartContext)
-    const {section} = useContext(ModalContext)
+    const {section, closeModal} = useContext(ModalContext)
     const buttonRef = useRef()
+    const [placeOrderError, setPlaceOrderError] = useState()
+    const [openSnackBar, setOpenSnackBar] = useState(false)
+    const [isLoading , setLoading] = useState(false)
     const {
         register,
         handleSubmit,
@@ -16,11 +21,10 @@ const CheckoutModal = () => {
         watch,
     } = useForm({
         defaultValues: {
-            'email':'',
-            'name': '',
-            'street':'',
-            'postal-code':'',
-            'city':'',
+            email:'',
+            name: '',
+            street:'',
+            city:'',
             // 'address': ''
         }
     })
@@ -29,14 +33,40 @@ const CheckoutModal = () => {
     const onPlaceOrder = () => {
         buttonRef.current.click()
     }
-    return (<Modal
+    const handlePlaceOrder = async(data) => {
+        setLoading(true)
+        const dataToSend = {
+            customer: data,
+            items: items
+        }
+        try {
+            await placeOrder(dataToSend)
+            setLoading(false)
+            closeModal()
+        } catch(err) {
+            setPlaceOrderError(err.message || "Something went wrong !!!")
+            setOpen(true)
+            setLoading(false)
+        }
+    }
+    return (
+    <>
+    <Snackbar
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+        open={openSnackBar}
+        autoHideDuration={6000}
+        onClose={() => {
+            setOpenSnackBar(false);
+        }}
+        message={placeOrderError}
+      />
+          <Modal
                 isOpen={section == 'checkout'}
                 actionTitle={'Place Order'}
                 onDoAction={onPlaceOrder}
+                isLoading={isLoading}
                 className="checkout">
-                    <form onSubmit={handleSubmit(data => {
-                        console.log(data);
-                    })}>
+                    <form onSubmit={handleSubmit(data => handlePlaceOrder(data))}>
                         <h2>Checkout:</h2>
                         <div className="cart-total">Cart Total: 
                             <span className="text-bold">&nbsp; ({totalCartItems}) &nbsp;</span> Item{totalCartItems > 1 && 's'}, 
@@ -77,7 +107,7 @@ const CheckoutModal = () => {
                                 },
                                 maxLength: {
                                     value: 255,
-                                    message: 'Please Type less then 255 characters'
+                                    message: 'Please Type less than 255 characters'
                                 },
                             })}/>
                         </div>
@@ -135,7 +165,9 @@ const CheckoutModal = () => {
                         </div>
                         <button style={{display: 'none'}} ref={buttonRef} type='submit'></button>
                     </form>
-            </Modal>)
+            </Modal>
+    </>
+)
 }
 
 export default CheckoutModal

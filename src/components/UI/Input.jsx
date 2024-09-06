@@ -10,7 +10,7 @@ const Input = forwardRef(({label, id, errorMessage, ...inputProps}, ref) => {
     <div className="control">
         <label htmlFor={id}>{label}</label>
         <input ref={ref} id={id} name={id} {...inputProps} />
-        {/* {errorMessage && <p className="error-message">{errorMessage}</p>} */}
+        {errorMessage && <p className="error-message">{errorMessage}</p>}
     </div>
     ) 
 })
