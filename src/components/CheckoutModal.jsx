@@ -81,7 +81,7 @@ const CheckoutModal = () => {
                         />
                         {errors.address && <p className="error-message">{errors.address.message}</p>} */}
 
-                        <div className="control-row">
+                        
                             <Input 
                             id='email' 
                             type="email" 
@@ -110,8 +110,6 @@ const CheckoutModal = () => {
                                     message: 'Please Type less than 255 characters'
                                 },
                             })}/>
-                        </div>
-                        <div className="control-row">
                             <Input 
                             id='street' 
                             type="text" 
@@ -128,7 +126,6 @@ const CheckoutModal = () => {
                                     message: 'Please Type less then 255 characters'
                                 },
                             })}/>
-                        </div>
                         <div className="control-row">
                             <Input 
                             id='postal-code' 

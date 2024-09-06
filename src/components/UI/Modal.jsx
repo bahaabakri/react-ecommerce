@@ -11,16 +11,16 @@ const Modal = ({children, isOpen, isActionDisable, actionTitle, onDoAction, clas
         if(isOpen) {
             dialogRef.current.showModal()
         } else {
-            onClose()
+            handleCloseDialog()
         }
     }, [isOpen])
 
-    const onClose = () => {
+    const handleCloseDialog = () => {
         dialogRef.current.close()
         closeModal()
     }
     const dialogJSX = 
-    (<dialog className={`${className} modal`} {...rest} ref={dialogRef}>
+    (<dialog className={`${className} modal`} {...rest} ref={dialogRef} onClose={handleCloseDialog}>
         {children}
         <div className="modal-actions">
             {actionTitle && 
@@ -30,7 +30,7 @@ const Modal = ({children, isOpen, isActionDisable, actionTitle, onDoAction, clas
                     
                 </Button>
             }
-            <Button isTextButton onClick={onClose}>
+            <Button isTextButton onClick={handleCloseDialog}>
                 Close
             </Button>
         </div>
