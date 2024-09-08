@@ -3,17 +3,22 @@ import Meals from "./components/Meals"
 import CartProvider from "./state/CartProvider";
 import ModalProvider from "./state/ModalProvider";
 import ModalWarper from "./components/ModalWarper";
+import SnackBarProvider from './state/SnackBarProvider';
+import SnackBarWraper from './components/SnackBarWraper';
 function App() {
   return (
     
-    
-    <ModalProvider>
-      <CartProvider>
-        <Header />
-        <Meals />
-        <ModalWarper />
-      </CartProvider>
-    </ModalProvider>
+    <SnackBarProvider>
+      <ModalProvider>
+        <CartProvider>
+          <Header />
+          <Meals />
+          <ModalWarper />
+          <SnackBarWraper/>
+        </CartProvider>
+      </ModalProvider>
+    </SnackBarProvider>
+
 
   );
 }

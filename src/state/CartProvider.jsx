@@ -4,9 +4,10 @@ import CartContext from "./CartContext"
 const ADD_ITEM = 'ADD_ITEM'
 const UPDATE_QUANTITY = 'UPDATE_QUANTITY'
 const DELETE_ITEM = 'DELETE_ITEM' 
+const RESET_CART = 'RESET_CART'
 
 const CartReducer = (state, action) => {
-    const updatedItems = [...state.items]
+    let updatedItems = [...state.items]
     let updatedCardItem
     if(action.type === ADD_ITEM) {
         const exsistingCardItemIndex = updatedItems.findIndex(el => el.id === action.payload.id)
@@ -41,6 +42,9 @@ const CartReducer = (state, action) => {
         const elementToDeleteIndex = updatedItems.findIndex(el => el.id == action.payload.itemId)
         updatedItems.splice(elementToDeleteIndex, 1)
     }
+    if (action.type === RESET_CART) {
+        updatedItems = []
+    }
     return {
         items: updatedItems
     }
@@ -69,6 +73,12 @@ const CartProvider = ({children}) => {
             payload: {itemId}
         })
     }
+
+    const handleResetCart = () => {
+        dispatchCart({
+            type: RESET_CART
+        })
+    }
     const totalCartPrice = cartState.items.reduce((accum, item,) => {
         return +accum + (item.quantity * item.price)
     }, 0)
@@ -82,6 +92,7 @@ const CartProvider = ({children}) => {
         addItem: handleAddItem,
         updateCartQuantity: handleUpdateQuantity,
         deleteItem: handleDeleteItem,
+        resetCart: handleResetCart
     }
     return (
         <CartContext.Provider value={cartCtx}>
