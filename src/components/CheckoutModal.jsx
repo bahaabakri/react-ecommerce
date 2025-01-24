@@ -1,24 +1,61 @@
-import {useContext, useRef, useState} from 'react'
+import {useContext, useRef, useState, useActionState } from 'react'
 import Modal from "./UI/Modal"
 import Input from "./UI/Input"
 import CartContext from '../state/CartContext'
 import ModalContext from '../state/ModalContext'
+import SnackBarContext from '../state/SnackBarContext'
 import {getCurrencyFormatter} from '../util'
 import { useForm } from 'react-hook-form'
-import {placeOrder} from '../request'
 import { Snackbar } from '@mui/material'
+import useHttp from '../hooks/useHttp'
+const httpConfig = {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json'
+    }
+}
+// import {placeOrder} from '../request'
+import checkoutAction from '../form-actions/Checkout.action'
+import * as yup from "yup";
+import { yupResolver } from "@hookform/resolvers/yup";
+// yup schema
+
+const formValidationSchema = yup.object({
+    email: yup.string().required('Email is required').email('Please Enter Email address'),
+    name: yup.string().required('Full name is required')
+        .min(5, 'Please Type at least 5 characters')
+        .max(255,'Please Type less than 255 characters')
+    ,
+    street:yup.string().required('Street is required')
+        .min(3,'Please Type at least 3 characters')
+        .max(255,'Please Type less than 255 characters'),
+    'postal-code': yup.string().required('Postal Code is required')
+        .min(3,'Please Type at least 2 characters')
+        .max(255,'Please Type less than 255 characters'),
+    city:yup.string().required('City is required')
+        .min(3,'Please Type at least 2 characters')
+        .max(255,'Please Type less than 255 characters')
+})
 const CheckoutModal = () => {
-    const {items, totalCartPrice, totalCartItems} = useContext(CartContext)
+    const {items, totalCartPrice, totalCartItems, resetCart} = useContext(CartContext)
     const {section, closeModal} = useContext(ModalContext)
+    const {showSnackBar} = useContext(SnackBarContext)
     const buttonRef = useRef()
-    const [placeOrderError, setPlaceOrderError] = useState()
+    const {
+        error:errorInPLaceOrder,
+        sendHttpRequest: placeOrderHttpReq,
+        isLoading} 
+        = useHttp([], 'http://localhost:3000/orders', httpConfig)
+    // const [placeOrderError, setPlaceOrderError] = useState()
     const [openSnackBar, setOpenSnackBar] = useState(false)
-    const [isLoading , setLoading] = useState(false)
+    // const [isLoading , setLoading] = useState(false)
+
+    const [checkoutFormState, checkoutFormAction, isPending] = useActionState(
+        (prevState, formData) => checkoutAction(prevState, formData, items, closeModal), 
+        {error:null})
     const {
         register,
-        handleSubmit,
-        formState:{errors, touchedFields},
-        watch,
+        formState:{errors, touchedFields, isValid:isValidForm},
     } = useForm({
         defaultValues: {
             email:'',
@@ -26,47 +63,34 @@ const CheckoutModal = () => {
             street:'',
             city:'',
             // 'address': ''
-        }
+        },
+        mode: "onBlur",
+        resolver: yupResolver(formValidationSchema)
     })
     console.log(errors);
-    
+
     const onPlaceOrder = () => {
         buttonRef.current.click()
-    }
-    const handlePlaceOrder = async(data) => {
-        setLoading(true)
-        const dataToSend = {
-            customer: data,
-            items: items
-        }
-        try {
-            await placeOrder(dataToSend)
-            setLoading(false)
-            closeModal()
-        } catch(err) {
-            setPlaceOrderError(err.message || "Something went wrong !!!")
-            setOpen(true)
-            setLoading(false)
-        }
     }
     return (
     <>
     <Snackbar
         anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-        open={openSnackBar}
+        open={checkoutFormState.errors}
         autoHideDuration={6000}
         onClose={() => {
             setOpenSnackBar(false);
         }}
-        message={placeOrderError}
+        message={checkoutFormState.error}
       />
           <Modal
                 isOpen={section == 'checkout'}
                 actionTitle={'Place Order'}
                 onDoAction={onPlaceOrder}
-                isLoading={isLoading}
+                isLoading={isPending}
+                isActionDisable={!isValidForm}
                 className="checkout">
-                    <form onSubmit={handleSubmit(data => handlePlaceOrder(data))}>
+                    <form action={checkoutFormAction}>
                         <h2>Checkout:</h2>
                         <div className="cart-total">Cart Total: 
                             <span className="text-bold">&nbsp; ({totalCartItems}) &nbsp;</span> Item{totalCartItems > 1 && 's'}, 
@@ -87,11 +111,7 @@ const CheckoutModal = () => {
                             type="email" 
                             label="Email" 
                             errorMessage={(touchedFields.email && errors.email) ? errors.email.message: ''}
-                                {...register('email', 
-                                {
-                                    required: "Email is required", 
-                                    email: "Please Enter Email address"
-                                })}
+                                {...register('email')}
                             /> 
                             {/* {touchedFields.email && errors.email && <p className="error-message">{errors.email.message}</p>} */}
                             <Input 
@@ -99,33 +119,13 @@ const CheckoutModal = () => {
                             type="text" 
                             label="Full Name"
                             errorMessage={(touchedFields.name && errors.name) ? errors.name.message: ''}
-                            {...register('name', {
-                                required: "Full name is required",
-                                minLength: {
-                                    value: 5,
-                                    message: "Please Type at least 5 characters"
-                                },
-                                maxLength: {
-                                    value: 255,
-                                    message: 'Please Type less than 255 characters'
-                                },
-                            })}/>
+                            {...register('name')}/>
                             <Input 
                             id='street' 
                             type="text" 
                             label="Street" 
                             errorMessage={(touchedFields.street && errors.street) ? errors.street.message: ''}
-                            {...register('street',{
-                                required: "Street is required",
-                                minLength: {
-                                    value: 2,
-                                    message: "Please Type at least 2 characters"
-                                },
-                                maxLength: {
-                                    value: 255,
-                                    message: 'Please Type less then 255 characters'
-                                },
-                            })}/>
+                            {...register('street')}/>
                         <div className="control-row">
                             <Input 
                             id='postal-code' 
@@ -138,7 +138,7 @@ const CheckoutModal = () => {
                                     value: 2,
                                     message: "Please Type at least 2 characters"
                                 },
-                                maxLength: {
+                                max: {
                                     value: 16,
                                     message: 'Please Type less then 16 characters'
                                 },
@@ -154,7 +154,7 @@ const CheckoutModal = () => {
                                     value: 2,
                                     message: "Please Type at least 2 characters"
                                 },
-                                maxLength: {
+                                max: {
                                     value: 16,
                                     message: 'Please Type less then 16 characters'
                                 },

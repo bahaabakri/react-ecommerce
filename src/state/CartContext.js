@@ -5,6 +5,7 @@ const CartContext = createContext({
     addItem: (item) => {},
     updateCartQuantity: (itemId, quantity) => {},
     deleteItem: (itemId) => {},
+    resetCart: () => {},
     calculateTotal: 0,
     totalCartItems: 0
 })

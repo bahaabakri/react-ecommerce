@@ -17,14 +17,13 @@ const Modal = ({children, isOpen, isActionDisable, actionTitle, onDoAction, clas
 
     const handleCloseDialog = () => {
         dialogRef.current.close()
-        closeModal()
     }
     const dialogJSX = 
     (<dialog className={`${className} modal`} {...rest} ref={dialogRef} onClose={handleCloseDialog}>
         {children}
         <div className="modal-actions">
             {actionTitle && 
-                <Button onClick={onDoAction} disabled={isActionDisable} className={'button-flex'}>
+                <Button onClick={onDoAction} disabled={isActionDisable || isLoading} className={'button-flex'}>
                      {isLoading && <div> <Spinner/></div> }
                     <div>{actionTitle}</div>
                     
